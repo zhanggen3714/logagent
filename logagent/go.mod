@@ -13,5 +13,6 @@ require (
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
+	gopkg.in/ini.v1 v1.56.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 )
