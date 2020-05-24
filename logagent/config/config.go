@@ -1,15 +1,24 @@
 package config
 
+//logagent app配置
 type APPConf struct {
-	KafkaConf `ini:"kafka""`
-	TaillogConfig `ini:"taillog""`
+	KafkaConf `ini:"kafka"`
+	EtcdConfig `ini:"etcd"`
+	TailLog `ini:"taillog"`
 }
 
+//kafka配置
 type KafkaConf struct {
-	Address string `ini:"address""`
-	Topic string   `ini:"topic""`
+	Address string `ini:"address"`
+	ChanSize int `ini:"log_chan_max_size"`
+}
+//etcd配置
+type EtcdConfig struct {
+	Address string `ini:"address"`
+	Timeout int   `ini:"timeout"`
 }
 
-type TaillogConfig struct {
-	Nigix string `ini:"nigix""`
+//logAgeny配置
+type TailLog struct {
+	Storekey string `ini:"storekey"`
 }
