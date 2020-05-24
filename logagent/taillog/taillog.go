@@ -47,7 +47,7 @@ func (T *TaillTask)run() {
 		select {
 		//父进程调用了cancel
 		case <-T.ctx.Done():
-			fmt.Printf("taill任务%s_%s退出了...\n",T.topic,T.path)
+			fmt.Printf("taill任务%s%s退出了...\n",T.topic,T.path)
 			return
 		case line := <-T.instance.Lines:
 			fmt.Printf("从%s文件中获取到内容%s",T.path,line.Text)

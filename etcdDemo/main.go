@@ -28,9 +28,10 @@ func main() {
 	//{"path":"D:\\tmp\\redis.txt","topic":"redis-log"},
 	jsonString:=`
 		[
-			{"path":"D:\\tmp\\nginx.txt","topic":"ngix-log"},
+			{"path":"D:\\tmp\\redis.txt","topic":"redis-log"},
+			{"path":"D:\\tmp\\nginx.txt","topic":"ngix86-log"},
 			{"path":"D:\\tmp\\mysql.txt","topic":"mysql-log"}
-			]
+		]
 		`
 	_,err=client.Put(ctx,key,jsonString)
 	cancel()

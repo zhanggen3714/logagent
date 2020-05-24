@@ -45,48 +45,53 @@ func InitTaskPool(logConfigList []*etcd.LogEntry) {
 //1.配置新增
 //2.配置删除
 //3.配置变更
+
+func (T *tailPool)seekDifference(confs[]*etcd.LogEntry,confsMap map[string]*TaillTask)(difference []*etcd.LogEntry){
+	for _, conf := range confs{
+		MK := fmt.Sprint(conf.Path, conf.Topic)
+		_, ok := confsMap[MK]
+		if !ok {
+			fmt.Println("检查到key发生变化----->：",MK)
+			difference= append(difference,conf)
+		}
+		continue
+
+	}
+	return
+}
+
 func (T *tailPool) run() {
 	for {
 		select {
 		case newConfSlice := <-T.watchNewConfigChannel:
-			fmt.Println("新的配置来了！", newConfSlice)
-			//发现需要新增的task
-			for _, conf := range newConfSlice {
+			fmt.Println("---------新的配置来了---------")
+			//增加
+			addList:=T.seekDifference(newConfSlice,T.taskMaping)
+			for _, conf := range addList {
+				var taiiobj TaillTask
+				task,err:=taiiobj.NewTaillTask(conf.Path, conf.Topic)
+				if err!=nil {
+					fmt.Println("初始化采集日志模块失败",err)
+				}
 				taskKey := fmt.Sprint(conf.Path, conf.Topic)
-				_, ok := T.taskMaping[taskKey]
-				if ok {
-					//原来有
-					continue
-				} else {
-					//新增的 task
-					var taiiobj TaillTask
-					task,err:=taiiobj.NewTaillTask(conf.Path, conf.Topic)
-					if err!=nil {
-						fmt.Println("初始化采集日志模块失败",err)
-					}
-					taskKey := fmt.Sprint(conf.Path, conf.Topic)
-					tiallpoolObj.taskMaping[taskKey] = task
-					fmt.Printf("新增%s日志采集模块成功",task.path)
-				}
+				tiallpoolObj.taskMaping[taskKey] = task
+				fmt.Printf("增加%s日志采集模块成功\n",taskKey)
 			}
-
-			//发现删除/停止task
-			for _, oldConf := range T.logConfigs {
-				isDelete := true
-				for _, newConf := range newConfSlice {
-					if oldConf.Path == newConf.Path && oldConf.Topic == oldConf.Topic {
-						isDelete = false
-						continue
-					}
-				}
-				if isDelete{
-					taskKey := fmt.Sprint(oldConf.Path, oldConf.Topic)
-					T.taskMaping[taskKey].exit()
-					delete(T.taskMaping,taskKey)
-				}
+			//删除
+			newTaskMaping:=make(map[string]*TaillTask,32)
+			for _, cnf := range newConfSlice {
+				mk:=fmt.Sprint(cnf.Path,cnf.Topic)
+				newTaskMaping[mk]=nil
+			}
+			deleteList:=T.seekDifference(T.logConfigs,newTaskMaping)
+			for _, item := range deleteList {
+				taskKey := fmt.Sprint(item.Path, item.Topic)
+				T.taskMaping[taskKey].exit()
+				delete(T.taskMaping,taskKey)
 			}
 			//更新logConfigs
-			//tiallpoolObj.logConfigs=newConfSlice
+			tiallpoolObj.logConfigs=newConfSlice
+			fmt.Println("最新日志采集任务列表",T.taskMaping)
 		default:
 			time.Sleep(time.Second)
 
