@@ -51,6 +51,7 @@ func (T *TaillTask)run() {
 			return
 		case line := <-T.instance.Lines:
 			fmt.Printf("从%s文件中获取到内容%s",T.path,line.Text)
+			//taill采集到数据-----channel------>kafka 异步
 			kafka.SendToChan(T.topic, line.Text)
 		}
 

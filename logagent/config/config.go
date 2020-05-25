@@ -4,7 +4,7 @@ package config
 type APPConf struct {
 	KafkaConf `ini:"kafka"`
 	EtcdConfig `ini:"etcd"`
-	TailLog `ini:"taillog"`
+
 }
 
 //kafka配置
@@ -16,9 +16,7 @@ type KafkaConf struct {
 type EtcdConfig struct {
 	Address string `ini:"address"`
 	Timeout int   `ini:"timeout"`
-}
-
-//logAgeny配置
-type TailLog struct {
 	Storekey string `ini:"storekey"`
 }
+
+

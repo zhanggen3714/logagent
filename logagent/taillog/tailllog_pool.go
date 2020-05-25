@@ -12,7 +12,9 @@ var tiallpoolObj *tailPool
 type tailPool struct {
 	//保存从etcd中获取的所有logAgent配置
 	logConfigs            []*etcd.LogEntry
+	//很关键维护taillpool中的taill任务
 	taskMaping            map[string]*TaillTask
+	//watch kafka中的key变更事件
 	watchNewConfigChannel chan []*etcd.LogEntry
 }
 
@@ -28,6 +30,7 @@ func InitTaskPool(logConfigList []*etcd.LogEntry) {
 	for _, cfg := range logConfigList {
 		//生成真正的日志采集模块
 		var taiiobj TaillTask
+		//NewTaillTask  开启taill run起来了
 		task,err:=taiiobj.NewTaillTask(cfg.Path, cfg.Topic)
 		taskKey := fmt.Sprint(cfg.Path, cfg.Topic)
 		tiallpoolObj.taskMaping[taskKey] = task
@@ -45,7 +48,6 @@ func InitTaskPool(logConfigList []*etcd.LogEntry) {
 //1.配置新增
 //2.配置删除
 //3.配置变更
-
 func (T *tailPool)seekDifference(confs[]*etcd.LogEntry,confsMap map[string]*TaillTask)(difference []*etcd.LogEntry){
 	for _, conf := range confs{
 		MK := fmt.Sprint(conf.Path, conf.Topic)

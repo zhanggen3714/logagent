@@ -50,7 +50,7 @@ func Getconfig(key string) (logConfigList []*LogEntry, err error) {
 	return
 }
 
-//在后台一直监控获取config的key
+//从main函数中开启Watchconfig协程，在后台一直监控kafka中的key，通知taillpool
 func Watchconfig(key string, newConfCh chan<- []*LogEntry) {
 	ch := etcdClient.Watch(context.Background(), key)
 	for resp := range ch {
